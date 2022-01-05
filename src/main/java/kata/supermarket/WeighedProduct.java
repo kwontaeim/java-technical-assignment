@@ -11,10 +11,15 @@ public class WeighedProduct {
     }
 
     BigDecimal pricePerKilo() {
-        return pricePerKilo;
+        return getPricePerKilo();
     }
 
     public Item weighing(final BigDecimal kilos) {
         return new ItemByWeight(this, kilos);
+    }
+
+
+    public BigDecimal getPricePerKilo() {
+        return pricePerKilo;
     }
 }
