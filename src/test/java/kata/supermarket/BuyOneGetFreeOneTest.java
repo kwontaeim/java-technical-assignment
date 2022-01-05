@@ -1,5 +1,6 @@
 package kata.supermarket;
 
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -8,55 +9,57 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class BasketTest {
-
-    @DisplayName("basket provides its total value when containing...")
+class BuyOneGetFreeOneTest {
+    @DisplayName("basket provides its discount total value when containing...")
     @MethodSource
     @ParameterizedTest(name = "{0}")
-    void basketProvidesTotalValue(String description, String expectedTotal, Iterable<Item> items) {
-        final Basket basket = new Basket();
-        items.forEach(basket::add);
-        assertEquals(new BigDecimal(expectedTotal), basket.total());
+    void hasExpectedTotalDiscount(String description, String expectedDiscountTotal, List<Item> items) {
+
+        final Discount discount = new DiscountByUnit(items, new BigDecimal(2), new BigDecimal(1));
+
+        assertEquals(new BigDecimal(expectedDiscountTotal),  discount.total());
+        BigDecimal price = new BigDecimal(expectedDiscountTotal);
+
+//        assertEquals(price, discount.calculate());
+//        System.out.println(totalDiscount);
+//        Map map = discount.distribute();
+//        map.forEach((k,v) -> System.out.println(new BigDecimal(k.toString()).multiply(BigDecimal.valueOf(((Integer) v / 2)))));
+//        System.out.println(map);
     }
 
-    static Stream<Arguments> basketProvidesTotalValue() {
+    static Stream<Arguments> hasExpectedTotalDiscount() {
         return Stream.of(
                 noItems(),
                 aSingleItemPricedPerUnit(),
                 multipleItemsPricedPerUnit(),
                 aSingleItemPricedByWeight(),
-                multipleItemsPricedByWeight(),
-                multipleSameItemsPricedPerUnit()
-        );
-    }
-
-    private static Arguments multipleSameItemsPricedPerUnit() {
-        return Arguments.of("multiple items priced per unit", "5.03",
-                Arrays.asList(aPackOfDigestives(),aPackOfDigestives()
-                        , aPintOfMilk(), aPintOfMilk(), aPintOfMilk(), aPintOfMilk(), aPackOfCheese()));
-    }
-
-    private static Arguments aSingleItemPricedByWeight() {
-        return Arguments.of("a single weighed item", "1.25", Collections.singleton(twoFiftyGramsOfAmericanSweets()));
-    }
-
-    private static Arguments multipleItemsPricedByWeight() {
-        return Arguments.of("multiple weighed items", "1.85",
-                Arrays.asList(twoFiftyGramsOfAmericanSweets(), twoHundredGramsOfPickAndMix())
+                multipleItemsPricedByWeight()
         );
     }
 
     private static Arguments multipleItemsPricedPerUnit() {
-        return Arguments.of("multiple items priced per unit", "2.04",
-                Arrays.asList(aPackOfDigestives(), aPintOfMilk()));
+        return Arguments.of("multiple items priced per unit", "2.53",
+                Arrays.asList(aPackOfDigestives(),aPackOfDigestives()
+                        , aPintOfMilk(), aPintOfMilk(), aPintOfMilk(), aPintOfMilk(), aPackOfCheese()));
     }
 
     private static Arguments aSingleItemPricedPerUnit() {
-        return Arguments.of("a single item priced per unit", "0.49", Collections.singleton(aPintOfMilk()));
+        return Arguments.of("a single item priced per unit", "0.00", Collections.singletonList(aPintOfMilk()));
+    }
+
+    private static Arguments aSingleItemPricedByWeight() {
+        return Arguments.of("a single weighed item", "0.00", Collections.singletonList(twoFiftyGramsOfAmericanSweets()));
+    }
+
+    private static Arguments multipleItemsPricedByWeight() {
+        return Arguments.of("multiple weighed items", "0.00",
+                Arrays.asList(twoFiftyGramsOfAmericanSweets(), twoHundredGramsOfPickAndMix())
+        );
     }
 
     private static Arguments noItems() {
